@@ -34,6 +34,6 @@ class PresensiController extends Controller
             'token' => $request->token
         ]);
 
-        return view('sukses');
+        return view('Presensi.sukses');
     }
 }
