@@ -16,12 +16,12 @@ class PresensiController extends Controller
 
         $qr = QrCode::size(300)->generate($url);
 
-        return view('qr', compact('qr'));
+        return view('Presensi.qr', compact('qr'));
     }
 
     public function form(Request $request)
     {
-        return view('absen', [
+        return view('Presensi.absen', [
             'token' => $request->token
         ]);
     }
