@@ -6,5 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class nilai extends Model
 {
-    //
+    protected $fillable = [
+        "matakuliah",
+        "Kode Matakuliah",
+        "nilai",
+    ];
 }

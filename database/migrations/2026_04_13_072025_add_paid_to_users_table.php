@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create("matakuliah", function (Blueprint $table) {
-        $table->bigIncrements("id");
-        $table->string("Kode Matakuliah");
-        $table->string("Mata Kuliah");
-        $table->integer("nilai");
+        Schema::table('users', function (Blueprint $table) {
+            //
         });
     }
 
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::table('users', function (Blueprint $table) {
+            //
+        });
     }
 };
