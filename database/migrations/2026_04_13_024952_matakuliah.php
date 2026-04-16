@@ -16,6 +16,7 @@ return new class extends Migration
         $table->string("Kode Matakuliah");
         $table->string("Mata Kuliah");
         $table->integer("nilai");
+        $table->time("jadwal");
         });
     }
 
