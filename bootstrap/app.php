@@ -14,6 +14,13 @@ return Application::configure(basePath: dirname(__DIR__))
     $middleware->alias([
         'role' => \App\Http\Middleware\RoleMiddleware::class,
     ]);
+    
+    $middleware->redirectUsersTo(function () {
+        if (auth()->check()) {
+            return auth()->user()->role === 'dosen' ? '/dosen/dashboard' : '/mahasiswa/dashboard';
+        }
+        return '/';
+    });
 })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
