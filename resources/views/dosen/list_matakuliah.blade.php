@@ -152,18 +152,18 @@
   </div>
   <div class="nav-section-title">Menu Utama</div>
   <nav class="sidebar-nav">
-    <a href="{{ url('/' . request()->segment(1) . '/dashboard') }}"><i class="bi bi-grid-fill"></i> Dashboard</a>
-    <a href="{{ url('/' . request()->segment(1) . '/generate_qr') }}"><i class="bi bi-qr-code-scan"></i> Generate QR</a>
-    <a href="{{ url('/' . request()->segment(1) . '/list_mahasiswa') }}"><i class="bi bi-people-fill"></i> Data Mahasiswa</a>
-    <a href="{{ url('/' . request()->segment(1) . '/list_matakuliah') }}" class="active"><i class="bi bi-book-fill"></i> Mata Kuliah</a>
+    <a href="/dosen/dashboard"><i class="bi bi-grid-fill"></i> Dashboard</a>
+    <a href="/dosen/generate_qr"><i class="bi bi-qr-code-scan"></i> Generate QR</a>
+    <a href="/dosen/list_mahasiswa"><i class="bi bi-people-fill"></i> Data Mahasiswa</a>
+    <a href="/dosen/list_matakuliah" class="active"><i class="bi bi-book-fill"></i> Mata Kuliah</a>
   </nav>
   <div class="nav-section-title">Lainnya</div>
   <nav class="sidebar-nav">
-    <a href="{{ url('/' . request()->segment(1) . '/profile') }}"><i class="bi bi-person-circle"></i> Profil</a>
+    <a href="/dosen/profile"><i class="bi bi-person-circle"></i> Profil</a>
     <a href="#"><i class="bi bi-gear-fill"></i> Pengaturan</a>
   </nav>
   <div class="sidebar-footer">
-    <form method="POST" action="{{ route('logout') }}" class="d-inline w-100"><input type="hidden" name="_token" value="{{ csrf_token() }}"><a href="#" onclick="event.preventDefault(); this.closest('form').submit();"><i class="bi bi-box-arrow-left"></i> Keluar</a></form>
+    <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" ><i class="bi bi-box-arrow-left"></i> Keluar</a>
   </div>
 </aside>
 
@@ -175,7 +175,7 @@
         <div class="page-title">Mata Kuliah</div>
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item"><a href="{{ url('/' . request()->segment(1) . '/dashboard') }}" style="color:var(--maroon);">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="/dosen/dashboard" style="color:var(--maroon);">Dashboard</a></li>
             <li class="breadcrumb-item active">Mata Kuliah</li>
           </ol>
         </nav>

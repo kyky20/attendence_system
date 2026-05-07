@@ -136,7 +136,7 @@
 <div class="top-header">
   <div class="d-flex align-items-center justify-content-between mb-2">
     <div class="d-flex align-items-center gap-2">
-      <a href="{{ url('/' . request()->segment(1) . '/dashboard') }}" class="back-btn"><i class="bi bi-arrow-left"></i></a>
+      <a href="/mahasiswa/dashboard" class="back-btn"><i class="bi bi-arrow-left"></i></a>
       <div>
         <div class="title">Mata Kuliah Saya</div>
         <small>Semester Genap 2025/2026</small>
@@ -159,19 +159,19 @@
 
 <!-- BOTTOM NAV -->
 <nav class="bottom-nav">
-  <a href="{{ url('/' . request()->segment(1) . '/dashboard') }}" class="nav-item-btn">
+  <a href="/mahasiswa/dashboard" class="nav-item-btn">
     <i class="bi bi-house-fill"></i><span>Beranda</span>
   </a>
-  <a href="{{ url('/' . request()->segment(1) . '/list_matakuliah') }}" class="nav-item-btn active">
+  <a href="/mahasiswa/list_matakuliah" class="nav-item-btn active">
     <i class="bi bi-book"></i><span>Mata Kuliah</span>
   </a>
-  <a href="{{ url('/' . request()->segment(1) . '/scan_qr') }}" class="nav-fab">
+  <a href="/mahasiswa/scan_qr" class="nav-fab">
     <div class="fab"><i class="bi bi-qr-code-scan"></i></div>
   </a>
   <a href="#" class="nav-item-btn">
     <i class="bi bi-file-earmark-text"></i><span>Izin</span>
   </a>
-  <a href="{{ url('/' . request()->segment(1) . '/profile') }}" class="nav-item-btn">
+  <a href="/mahasiswa/profile" class="nav-item-btn">
     <i class="bi bi-person-circle"></i><span>Profil</span>
   </a>
 </nav>
@@ -390,5 +390,10 @@
 
   renderGrid();
 </script>
+
+<form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+    @csrf
+</form>
+
 </body>
 </html>

@@ -197,12 +197,12 @@
         <span class="info-value">{{ auth()->user()->name }}</span>
       </div>
       <div class="info-row">
-        <span class="info-label">NIM/Email</span>
-              <span class="info-value">{{ auth()->user()->email }}</span>
+        <span class="info-label">NIM</span>
+        <span class="info-value">M001</span>
       </div>
       <div class="info-row">
         <span class="info-label">Email</span>
-              <span class="info-value">{{ auth()->user()->email }}</span>
+        <span class="info-value">andi@student.ac.id</span>
       </div>
       <div class="info-row">
         <span class="info-label">No. HP</span>
@@ -310,23 +310,39 @@
     </div>
   </div>
 
+  <!-- Logout -->
+  <div class="section-card mb-3">
+    <div class="section-card-header">
+      <div class="icon-wrap" style="background:rgba(220,53,69,0.1);">
+        <i class="bi bi-box-arrow-right" style="color:#dc3545;"></i>
+      </div>
+      <h6 style="color:#dc3545;">Keluar Akun</h6>
+    </div>
+    <div class="section-card-body">
+      <p style="font-size:.82rem;color:#888;margin-bottom:.8rem;">Anda akan keluar dari sesi ini dan diarahkan ke halaman login.</p>
+      <button class="btn btn-danger btn-sm rounded-pill px-3" onclick="doLogout()">
+        <i class="bi bi-box-arrow-right me-1"></i>Logout
+      </button>
+    </div>
+  </div>
+
 </div><!-- end content -->
 
 <!-- BOTTOM NAV -->
 <nav class="bottom-nav">
-  <a href="{{ url('/' . request()->segment(1) . '/dashboard') }}" class="nav-item-btn">
+  <a href="/mahasiswa/dashboard" class="nav-item-btn">
     <i class="bi bi-house-fill"></i><span>Beranda</span>
   </a>
-  <a href="{{ url('/' . request()->segment(1) . '/list_matakuliah') }}" class="nav-item-btn">
+  <a href="/mahasiswa/list_matakuliah" class="nav-item-btn">
     <i class="bi bi-book"></i><span>Mata Kuliah</span>
   </a>
-  <a href="{{ url('/' . request()->segment(1) . '/scan_qr') }}" class="nav-fab">
+  <a href="/mahasiswa/scan_qr" class="nav-fab">
     <div class="fab"><i class="bi bi-qr-code-scan"></i></div>
   </a>
   <a href="#" class="nav-item-btn">
     <i class="bi bi-file-earmark-text"></i><span>Izin</span>
   </a>
-  <a href="{{ url('/' . request()->segment(1) . '/profile') }}" class="nav-item-btn active">
+  <a href="/mahasiswa/profile" class="nav-item-btn active">
     <i class="bi bi-person-circle"></i><span>Profil</span>
   </a>
 </nav>
@@ -346,7 +362,7 @@
         </div>
         <div class="mb-3">
           <label class="form-label">Email</label>
-          <input type="email" class="form-control" id="editEmail" value="{{ auth()->user()->email }}"/>
+          <input type="email" class="form-control" id="editEmail" value="andi@student.ac.id"/>
         </div>
         <div class="mb-3">
           <label class="form-label">No. HP</label>
@@ -436,6 +452,11 @@
   function openEditModal()     { modalEditProfil.show(); }
   function openPasswordModal() { modalPassword.show(); }
 
+  function doLogout() {
+    showToast('Berhasil logout. Mengalihkan…', 'secondary');
+    setTimeout(() => { window.location.href = '../index.html'; }, 1500);
+  }
+
   function saveProfile() {
     modalEditProfil.hide();
     showToast('Profil berhasil diperbarui!', 'success');
@@ -460,5 +481,10 @@
     new bootstrap.Toast(toast, { delay: 3000 }).show();
   }
 </script>
+
+<form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+    @csrf
+</form>
+
 </body>
 </html>

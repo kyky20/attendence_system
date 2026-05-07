@@ -34,28 +34,29 @@
       width: 230px; height: 230px; position: relative;
     }
     /* Corner markers */
-    .corner-tl, .corner-tr, .corner-bl, .corner-br {
+    .scan-frame::before, .scan-frame::after,
+    .scan-frame .corner-br, .scan-frame .corner-tl2 {
+      content: '';
       position: absolute; width: 30px; height: 30px; border: 3px solid #ffd700;
-      z-index: 10;
     }
-    .corner-tl { top: 0; left: 0; border-right: none; border-bottom: none; border-radius: 4px 0 0 0; }
-    .corner-tr { top: 0; right: 0; border-left: none; border-bottom: none; border-radius: 0 4px 0 0; }
-    .corner-bl { bottom: 0; left: 0; border-right: none; border-top: none; border-radius: 0 0 0 4px; }
-    .corner-br { bottom: 0; right: 0; border-left: none; border-top: none; border-radius: 0 0 4px 0; }
-
-    #reader video { 
-      width: 100% !important; 
-      height: 100% !important; 
-      object-fit: cover !important; 
+    .scan-frame::before { top: 0; left: 0; border-right: none; border-bottom: none; border-radius: 4px 0 0 0; }
+    .scan-frame::after  { top: 0; right: 0; border-left: none; border-bottom: none; border-radius: 0 4px 0 0; }
+    .scan-frame .corner-br {
+      bottom: 0; right: 0; border-left: none; border-top: none; border-radius: 0 0 4px 0;
+      position: absolute;
     }
-    #reader { position: absolute; inset: 0; z-index: 1; }
-
+    .scan-frame .corner-bl {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; width: 30px; height: 30px;
+      border: 3px solid #ffd700;
+      border-right: none; border-top: none; border-radius: 0 0 0 4px;
+    }
     /* Scan beam */
     .scan-beam {
       position: absolute; left: 0; right: 0; top: 0;
       height: 2px; background: linear-gradient(90deg, transparent, #ffd700, transparent);
       animation: scanMove 2s linear infinite;
-      z-index: 10;
     }
     .scan-beam.paused { animation-play-state: paused; }
     @keyframes scanMove { 0%{top:0} 100%{top:230px} }
@@ -150,7 +151,7 @@
 <!-- TOP HEADER -->
 <div class="top-header">
   <div class="d-flex align-items-center gap-3">
-    <a href="/mahasiswa/dashboard" class="back-btn"><i class="bi bi-arrow-left"></i></a>
+    <a href="{{ url('/' . request()->segment(1) . '/dashboard') }}" class="back-btn"><i class="bi bi-arrow-left"></i></a>
     <div>
       <div class="title">Scan QR Presensi</div>
       <small>Arahkan kamera ke QR code dosen</small>
@@ -173,18 +174,12 @@
 <!-- SCAN VIEWPORT -->
 <div class="scan-viewport-wrap" id="scanViewport">
   <div class="scan-frame">
-    <div class="corner-tl"></div>
-    <div class="corner-tr"></div>
     <div class="scan-beam" id="scanBeam"></div>
-    <div id="reader" style="width: 100%; height: 100%; border-radius: 4px; overflow: hidden; display: none;"></div>
-    <div class="qr-placeholder" id="camera-prompt" onclick="startCamera()" style="cursor: pointer; width: 100%; height: 100%; position: relative; z-index: 5;">
-      <div class="text-center">
-        <i class="bi bi-camera" style="font-size:4rem;color:rgba(255,255,255,0.2);"></i>
-        <div style="color:rgba(255,255,255,0.7);font-size:.8rem;margin-top:10px;">Klik untuk Aktifkan Kamera</div>
-      </div>
+    <div class="qr-placeholder">
+      <i class="bi bi-qr-code" style="font-size:5rem;color:rgba(255,255,255,0.15);"></i>
     </div>
-    <div class="corner-bl"></div>
     <div class="corner-br"></div>
+    <div class="corner-bl"></div>
   </div>
 
   <!-- overlaying status label -->
@@ -239,19 +234,19 @@
 
 <!-- BOTTOM NAV -->
 <nav class="bottom-nav">
-  <a href="/mahasiswa/dashboard" class="nav-item-btn">
+  <a href="{{ url('/' . request()->segment(1) . '/dashboard') }}" class="nav-item-btn">
     <i class="bi bi-house-fill"></i><span>Beranda</span>
   </a>
-  <a href="/mahasiswa/list_matakuliah" class="nav-item-btn">
+  <a href="{{ url('/' . request()->segment(1) . '/list_matakuliah') }}" class="nav-item-btn">
     <i class="bi bi-book"></i><span>Mata Kuliah</span>
   </a>
-  <a href="/mahasiswa/scan_qr" class="nav-fab">
+  <a href="{{ url('/' . request()->segment(1) . '/scan_qr') }}" class="nav-fab">
     <div class="fab"><i class="bi bi-qr-code-scan"></i></div>
   </a>
   <a href="#" class="nav-item-btn">
     <i class="bi bi-file-earmark-text"></i><span>Izin</span>
   </a>
-  <a href="/mahasiswa/profile" class="nav-item-btn">
+  <a href="{{ url('/' . request()->segment(1) . '/profile') }}" class="nav-item-btn">
     <i class="bi bi-person-circle"></i><span>Profil</span>
   </a>
 </nav>
@@ -266,27 +261,6 @@
   </div>
 </div>
 
-
-<!-- MODAL BACA QR -->
-<div class="modal fade" id="modalQrText" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 shadow">
-      <div class="modal-header text-bg-success">
-        <h5 class="modal-title"><i class="bi bi-qr-code-scan me-2"></i>QR Code Terbaca</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body p-4 text-center">
-        <div class="mb-3 text-muted" style="font-size:.88rem;">Teks dari QR Code:</div>
-        <div id="qrTextResult" class="p-3 bg-light rounded border fw-bold" style="word-break: break-all; font-family: monospace; font-size:1.1rem; color:#1a1a2e;"></div>
-      </div>
-      <div class="modal-footer justify-content-center border-0 pb-4">
-        <button type="button" class="btn btn-secondary px-4 rounded-pill" data-bs-dismiss="modal" onclick="resetCamera()">Tutup & Scan Lagi</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script src="https://unpkg.com/html5-qrcode"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
   // Current time display
@@ -357,45 +331,6 @@
     }, 1400);
   }
 
-  
-  let html5QrCode;
-
-  function startCamera() {
-    document.getElementById('camera-prompt').style.display = 'none';
-    document.getElementById('reader').style.display = 'block';
-    document.getElementById('scanStatus').innerHTML = '<i class="bi bi-camera-video me-1"></i> Mencari QR…';
-
-    html5QrCode = new Html5Qrcode("reader");
-    html5QrCode.start(
-      { facingMode: "environment" },
-      {
-        fps: 20,
-      },
-      (decodedText, decodedResult) => {
-        html5QrCode.stop().then(() => {
-          document.getElementById('reader').style.display = 'none';
-          document.getElementById('camera-prompt').style.display = 'flex';
-          document.getElementById('scanStatus').innerHTML = '<i class="bi bi-check2 me-1"></i> Terbaca!';
-          document.getElementById('scanStatus').className = 'badge rounded-pill text-bg-success px-3';
-          
-          document.getElementById('qrTextResult').textContent = decodedText;
-          new bootstrap.Modal(document.getElementById('modalQrText')).show();
-        });
-      },
-      (errorMessage) => {
-      })
-    .catch((err) => {
-      console.log(err);
-      showToast("Gagal mengakses kamera!", "danger");
-      resetCamera();
-    });
-  }
-
-  function resetCamera() {
-    document.getElementById('scanStatus').innerHTML = '<i class="bi bi-camera-video me-1"></i> Menunggu QR…';
-    document.getElementById('scanStatus').className = 'badge rounded-pill text-bg-warning px-3';
-  }
-
   function simulateScanFail() {
     setStep(2);
     document.getElementById('scanStatus').innerHTML = '<i class="bi bi-exclamation-triangle me-1"></i> Gagal…';
@@ -439,10 +374,5 @@
     new bootstrap.Toast(toast, { delay: 3500 }).show();
   }
 </script>
-
-<form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-    @csrf
-</form>
-
 </body>
 </html>

@@ -204,7 +204,7 @@
     <div style="font-size:.85rem;font-weight:700;color:#1a1a2e;margin-bottom:.7rem;">Aksi Cepat</div>
     <div class="row g-2">
       <div class="col-3">
-        <a href="{{ url('/' . request()->segment(1) . '/scan_qr') }}" class="quick-btn">
+        <a href="/mahasiswa/scan_qr" class="quick-btn">
           <i class="bi bi-qr-code-scan"></i>
           <span>Scan QR</span>
         </a>
@@ -216,7 +216,7 @@
         </a>
       </div>
       <div class="col-3">
-        <a href="{{ url('/' . request()->segment(1) . '/list_matakuliah') }}" class="quick-btn">
+        <a href="/mahasiswa/list_matakuliah" class="quick-btn">
           <i class="bi bi-book-fill"></i>
           <span>Mata Kuliah</span>
         </a>
@@ -258,22 +258,22 @@
 
 <!-- BOTTOM NAV -->
 <nav class="bottom-nav">
-  <a href="{{ url('/' . request()->segment(1) . '/dashboard') }}" class="nav-item-btn active">
+  <a href="/mahasiswa/dashboard" class="nav-item-btn active">
     <i class="bi bi-house-fill"></i>
     <span>Beranda</span>
   </a>
-  <a href="{{ url('/' . request()->segment(1) . '/list_matakuliah') }}" class="nav-item-btn">
+  <a href="/mahasiswa/list_matakuliah" class="nav-item-btn">
     <i class="bi bi-book"></i>
     <span>Mata Kuliah</span>
   </a>
-  <a href="{{ url('/' . request()->segment(1) . '/scan_qr') }}" class="nav-fab">
+  <a href="/mahasiswa/scan_qr" class="nav-fab">
     <div class="fab"><i class="bi bi-qr-code-scan"></i></div>
   </a>
   <a href="#" class="nav-item-btn">
     <i class="bi bi-file-earmark-text"></i>
     <span>Izin</span>
   </a>
-  <a href="{{ url('/' . request()->segment(1) . '/profile') }}" class="nav-item-btn">
+  <a href="/mahasiswa/profile" class="nav-item-btn">
     <i class="bi bi-person-circle"></i>
     <span>Profil</span>
   </a>
@@ -405,5 +405,10 @@
     alert('Pengajuan izin berhasil dikirim! Menunggu persetujuan dosen.');
   }
 </script>
+
+<form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+    @csrf
+</form>
+
 </body>
 </html>
