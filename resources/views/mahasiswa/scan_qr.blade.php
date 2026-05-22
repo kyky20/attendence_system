@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Scan QR – Ambasen</title>
@@ -358,38 +359,146 @@
   }
 
   
-  let html5QrCode;
+ let html5QrCode;
 
-  function startCamera() {
-    document.getElementById('camera-prompt').style.display = 'none';
-    document.getElementById('reader').style.display = 'block';
-    document.getElementById('scanStatus').innerHTML = '<i class="bi bi-camera-video me-1"></i> Mencari QR…';
+function startCamera() {
 
-    html5QrCode = new Html5Qrcode("reader");
-    html5QrCode.start(
-      { facingMode: "environment" },
-      {
-        fps: 20,
-      },
-      (decodedText, decodedResult) => {
-        html5QrCode.stop().then(() => {
-          document.getElementById('reader').style.display = 'none';
-          document.getElementById('camera-prompt').style.display = 'flex';
-          document.getElementById('scanStatus').innerHTML = '<i class="bi bi-check2 me-1"></i> Terbaca!';
-          document.getElementById('scanStatus').className = 'badge rounded-pill text-bg-success px-3';
-          
-          document.getElementById('qrTextResult').textContent = decodedText;
-          new bootstrap.Modal(document.getElementById('modalQrText')).show();
-        });
-      },
-      (errorMessage) => {
-      })
-    .catch((err) => {
-      console.log(err);
-      showToast("Gagal mengakses kamera!", "danger");
-      resetCamera();
-    });
-  }
+    // WAJIB AKTIFKAN LOKASI DULU
+    navigator.geolocation.getCurrentPosition(
+
+        // SUCCESS LOKASI
+        (position) => {
+
+            document.getElementById('camera-prompt').style.display = 'none';
+
+            document.getElementById('reader').style.display = 'block';
+
+            document.getElementById('scanStatus').innerHTML =
+                '<i class="bi bi-camera-video me-1"></i> Mencari QR…';
+
+            html5QrCode = new Html5Qrcode("reader");
+
+            html5QrCode.start(
+
+                { facingMode: "environment" },
+
+                {
+                    fps: 20,
+                    qrbox: 220
+                },
+
+                // SUCCESS SCAN
+                (decodedText, decodedResult) => {
+
+                    console.log(decodedText);
+
+                    html5QrCode.stop().then(() => {
+
+                        document.getElementById('reader').style.display = 'none';
+
+                        document.getElementById('camera-prompt').style.display = 'flex';
+
+                        document.getElementById('scanStatus').innerHTML =
+                            '<i class="bi bi-arrow-repeat me-1"></i> Memproses...';
+
+                        document.getElementById('scanStatus').className =
+                            'badge rounded-pill text-bg-info px-3';
+
+                        fetch('/mahasiswa/scan/process', {
+
+                            method: 'POST',
+
+                            headers: {
+                                'Content-Type': 'application/json',
+
+                                'X-CSRF-TOKEN': document
+                                    .querySelector('meta[name="csrf-token"]')
+                                    .getAttribute('content')
+                            },
+
+                            body: JSON.stringify({
+
+                                qr_text: decodedText,
+
+                                // GPS MAHASISWA
+                                latitude:
+                                    position.coords.latitude,
+
+                                longitude:
+                                    position.coords.longitude
+
+                            })
+
+                        })
+
+                        .then(res => res.json())
+
+                        .then(data => {
+
+                            console.log(data);
+
+                            if(data.success){
+
+                                simulateScanSuccess();
+
+                            } else {
+
+                                alert(data.message);
+
+                                simulateScanFail();
+
+                            }
+
+                        })
+
+                        .catch(err => {
+
+                            console.log(err);
+
+                            simulateScanFail();
+
+                        });
+
+                    });
+
+                },
+
+                // ERROR SCAN
+                (errorMessage) => {
+                    // ignore realtime errors
+                }
+
+            )
+
+            .catch((err) => {
+
+                console.log(err);
+
+                showToast(
+                    "Gagal mengakses kamera!",
+                    "danger"
+                );
+
+                resetCamera();
+
+            });
+
+        },
+
+        // GPS DITOLAK / OFF
+        (error) => {
+
+            alert(
+                'Lokasi wajib diaktifkan untuk melakukan presensi!'
+            );
+
+            return;
+
+        }
+
+    );
+
+}
 
   function resetCamera() {
     document.getElementById('scanStatus').innerHTML = '<i class="bi bi-camera-video me-1"></i> Menunggu QR…';
