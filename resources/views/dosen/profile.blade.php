@@ -200,7 +200,12 @@
     <a href="#"><i class="bi bi-gear-fill"></i> Pengaturan</a>
   </nav>
   <div class="sidebar-footer">
-    <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" ><i class="bi bi-box-arrow-left"></i> Keluar</a>
+    <form method="POST" action="{{ route('logout') }}">
+      @csrf
+      <button type="submit" style="width:100%;background:none;border:none;display:flex;align-items:center;gap:.6rem;color:rgba(255,255,255,0.7);padding:.5rem .8rem;border-radius:8px;">
+        <i class="bi bi-box-arrow-left"></i> Keluar
+      </button>
+    </form>
   </div>
 </aside>
 

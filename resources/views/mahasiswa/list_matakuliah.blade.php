@@ -19,10 +19,12 @@
     .mk-card-header { padding:1.1rem 1.2rem .8rem; border-left:4px solid var(--maroon); }
     .mk-tag { font-size:.72rem; padding:.2rem .55rem; border-radius:20px; background:var(--gray-bg); color:#555; display:inline-flex; align-items:center; gap:.25rem; margin:.15rem; }
     .bottom-nav { position:fixed; bottom:0; left:0; right:0; height:var(--nav-h); background:#fff; border-top:1px solid #eee; display:flex; z-index:1000; box-shadow:0 -4px 16px rgba(0,0,0,.07); }
-    .nav-item-btn { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#aaa; text-decoration:none; font-size:.65rem; font-weight:600; gap:.2rem; }
+    .nav-item-btn { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; border:none; background:none; color:#aaa; cursor:pointer; font-size:.65rem; font-weight:600; gap:.2rem; transition:color .2s; text-decoration:none; padding:0; }
     .nav-item-btn i { font-size:1.3rem; }
     .nav-item-btn.active { color:var(--maroon); }
-    .nav-fab { flex:1; display:flex; align-items:center; justify-content:center; text-decoration:none; }
+    .nav-item-btn.active i { position:relative; }
+    .nav-item-btn.active i::after { content:''; position:absolute; bottom:-4px; left:50%; transform:translateX(-50%); width:4px; height:4px; border-radius:50%; background:var(--maroon); }
+    .nav-fab { flex:1; display:flex; align-items:center; justify-content:center; border:none; background:none; cursor:pointer; text-decoration:none; }
     .fab { width:54px; height:54px; background:linear-gradient(135deg,var(--maroon-dark),#c0003a); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:1.5rem; box-shadow:0 4px 16px rgba(128,0,32,.35); margin-top:-20px; border:3px solid #fff; }
   </style>
 </head>
@@ -112,11 +114,21 @@
 </div>
 
 <nav class="bottom-nav">
-  <a href="/mahasiswa/dashboard" class="nav-item-btn"><i class="bi bi-house-fill"></i><span>Beranda</span></a>
-  <a href="/mahasiswa/list_matakuliah" class="nav-item-btn active"><i class="bi bi-book"></i><span>Mata Kuliah</span></a>
-  <a href="/mahasiswa/scan_qr" class="nav-fab"><div class="fab"><i class="bi bi-qr-code-scan"></i></div></a>
-  <a href="#" class="nav-item-btn"><i class="bi bi-file-earmark-text"></i><span>Izin</span></a>
-  <a href="/mahasiswa/profile" class="nav-item-btn"><i class="bi bi-person-circle"></i><span>Profil</span></a>
+  <a href="/mahasiswa/dashboard" class="nav-item-btn">
+    <i class="bi bi-house-fill"></i><span>Beranda</span>
+  </a>
+  <a href="/mahasiswa/list_matakuliah" class="nav-item-btn active">
+    <i class="bi bi-book"></i><span>Mata Kuliah</span>
+  </a>
+  <a href="/mahasiswa/scan_qr" class="nav-fab">
+    <div class="fab"><i class="bi bi-qr-code-scan"></i></div>
+  </a>
+  <a href="/mahasiswa/izin" class="nav-item-btn">
+    <i class="bi bi-file-earmark-text"></i><span>Izin</span>
+  </a>
+  <a href="/mahasiswa/profile" class="nav-item-btn">
+    <i class="bi bi-person-circle"></i><span>Profil</span>
+  </a>
 </nav>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

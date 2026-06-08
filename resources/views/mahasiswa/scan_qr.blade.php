@@ -124,9 +124,20 @@
     }
     .nav-item-btn i { font-size: 1.3rem; }
     .nav-item-btn.active { color: var(--maroon); }
+    .nav-item-btn.active i { position: relative; }
+    .nav-item-btn.active i::after {
+      content: ''; position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%);
+      width: 4px; height: 4px; border-radius: 50%; background: var(--maroon);
+    }
     .nav-fab {
       flex: 1; display: flex; align-items: center; justify-content: center;
       border: none; background: none; cursor: pointer; text-decoration: none;
+    }
+    .nav-fab .fab {
+      width: 54px; height: 54px; background: linear-gradient(135deg, var(--maroon-dark), #c0003a);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 1.5rem; box-shadow: 0 4px 16px rgba(128,0,32,0.35);
+      margin-top: -20px; border: 3px solid #fff;
     }
     .nav-fab .fab {
       width: 54px; height: 54px; background: linear-gradient(135deg, var(--maroon-dark), #c0003a);
@@ -249,7 +260,7 @@
   <a href="/mahasiswa/scan_qr" class="nav-fab">
     <div class="fab"><i class="bi bi-qr-code-scan"></i></div>
   </a>
-  <a href="#" class="nav-item-btn">
+  <a href="/mahasiswa/izin" class="nav-item-btn">
     <i class="bi bi-file-earmark-text"></i><span>Izin</span>
   </a>
   <a href="/mahasiswa/profile" class="nav-item-btn">

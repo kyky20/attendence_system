@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MahasiswaController;
 use App\Http\Controllers\MatakuliahController;
 use App\Http\Controllers\Mahasiswa\ScanQRController;
+use App\Http\Controllers\Mahasiswa\IzinController;
 
 Route::get('/', function () {
     if (auth()->check()) {
@@ -53,10 +54,11 @@ Route::middleware(['auth', 'role:mahasiswa'])->prefix('mahasiswa')->group(functi
         return view('mahasiswa.scan_qr');
     });
     Route::get('/scan/{token}', [ScanQRController::class, 'scan']);
-    Route::post(
-        '/scan/process',
-        [ScanQRController::class, 'process']
-    );
+    Route::post('/scan/process', [ScanQRController::class, 'process']);
+
+    Route::get('/izin', [IzinController::class, 'index'])->name('mahasiswa.izin.index');
+    Route::post('/izin', [IzinController::class, 'store'])->name('mahasiswa.izin.store');
+    Route::delete('/izin/{izin}', [IzinController::class, 'destroy'])->name('mahasiswa.izin.destroy');
 //     Route::post('/scan/process', function () {
 //     die('HALO DARI ROUTE');
 // });

@@ -339,7 +339,7 @@
   <a href="/mahasiswa/scan_qr" class="nav-fab">
     <div class="fab"><i class="bi bi-qr-code-scan"></i></div>
   </a>
-  <a href="#" class="nav-item-btn">
+  <a href="/mahasiswa/izin" class="nav-item-btn">
     <i class="bi bi-file-earmark-text"></i><span>Izin</span>
   </a>
   <a href="/mahasiswa/profile" class="nav-item-btn active">

@@ -200,7 +200,7 @@
 <div class="p-3" style="max-width:640px;margin:auto;">
 
   <!-- Quick Actions -->
-  <div class="mb-3">
+  <!-- <div class="mb-3">
     <div style="font-size:.85rem;font-weight:700;color:#1a1a2e;margin-bottom:.7rem;">Aksi Cepat</div>
     <div class="row g-2">
       <div class="col-3">
@@ -228,7 +228,7 @@
         </a>
       </div>
     </div>
-  </div>
+  </div> -->
 
   <!-- Kehadiran per MK -->
   <div class="section-card p-3 mb-3">
@@ -269,7 +269,7 @@
   <a href="/mahasiswa/scan_qr" class="nav-fab">
     <div class="fab"><i class="bi bi-qr-code-scan"></i></div>
   </a>
-  <a href="#" class="nav-item-btn">
+  <a href="/mahasiswa/izin" class="nav-item-btn">
     <i class="bi bi-file-earmark-text"></i>
     <span>Izin</span>
   </a>
