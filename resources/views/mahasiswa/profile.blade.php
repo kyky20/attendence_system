@@ -452,10 +452,13 @@
   function openEditModal()     { modalEditProfil.show(); }
   function openPasswordModal() { modalPassword.show(); }
 
-  function doLogout() {
-    showToast('Berhasil logout. Mengalihkan…', 'secondary');
-    setTimeout(() => { window.location.href = '../index.html'; }, 1500);
-  }
+ function doLogout() {
+    showToast('Logout...', 'secondary');
+
+    setTimeout(() => {
+        document.getElementById('logout-form').submit();
+    }, 500);
+}
 
   function saveProfile() {
     modalEditProfil.hide();
@@ -482,7 +485,7 @@
   }
 </script>
 
-<form id="logout-form" action="{{ route('login') }}" method="POST" class="d-none">
+<form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
     @csrf
 </form>
 
