@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 
 class Presensi extends Model
@@ -26,13 +27,13 @@ class Presensi extends Model
 
     ];
 
-    public function mahasiswa()
+    public function mahasiswa(): BelongsTo
     {
         return $this->belongsTo(User::class, 'mahasiswa_id');
     }
 
-    public function qrSession()
+    public function qrSession(): BelongsTo
     {
-        return $this->belongsTo(QRSession::class);
+        return $this->belongsTo(QRSession::class, 'qr_session_id');
     }
 }

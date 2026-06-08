@@ -4,8 +4,11 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
+use App\Models\Mahasiswa;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
@@ -46,5 +49,25 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function mahasiswaProfile(): HasOne
+    {
+        return $this->hasOne(Mahasiswa::class, 'user_id');
+    }
+
+    public function presensis(): HasMany
+    {
+        return $this->hasMany(Presensi::class, 'mahasiswa_id');
+    }
+
+    public function getNimAttribute(): ?string
+    {
+        return $this->mahasiswaProfile?->nim;
+    }
+
+    public function getNamaAttribute(): string
+    {
+        return $this->mahasiswaProfile?->nama ?? $this->name;
     }
 }

@@ -18,6 +18,10 @@ return new class extends Migration
                 ->onDelete('cascade');
 
             // info perkuliahan
+            $table->foreignId('matakuliah_id')
+                ->constrained('matakuliah')
+                ->cascadeOnDelete();
+
             $table->string('kode_matakuliah');
             $table->integer('pertemuan');
 
@@ -42,6 +46,10 @@ return new class extends Migration
                 'aktif',
                 'selesai'
             ])->default('aktif');
+
+            // GPS dosen saat generate QR
+            $table->double('latitude')->nullable();
+            $table->double('longitude')->nullable();
 
             $table->timestamps();
         });

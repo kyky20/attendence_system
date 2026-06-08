@@ -12,11 +12,17 @@ return new class extends Migration {
     {
         Schema::create('mahasiswas', function (Blueprint $table) {
             $table->id();
-        
+            $table->foreignId('user_id')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
             $table->string('nim')->unique();
             $table->string('nama');
             $table->string('jurusan');
-            $table->string('email');
+            $table->year('angkatan')->nullable();
+            $table->string('email')->unique();
+            $table->string('no_hp')->nullable();
+            $table->enum('status', ['Aktif', 'Cuti', 'Non-Aktif'])->default('Aktif');
             $table->timestamps();
         });
     }
@@ -26,6 +32,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-
+        Schema::dropIfExists('mahasiswas');
     }
 };

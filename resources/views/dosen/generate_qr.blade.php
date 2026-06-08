@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Generate QR – Ambasen</title>
+  <title>Generate QR - Ambasen</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
   <!-- QR code library -->
@@ -449,8 +449,7 @@
 
         @csrf
 
-        <button type="submit"
-          style="
+        <button type="submit" style="
                 width:100%;
                 background:none;
                 border:none;
@@ -500,16 +499,16 @@
               <label class="form-label">Mata Kuliah</label>
               <select class="form-select" id="selMk">
                 <option value="">-- Pilih Mata Kuliah --</option>
-                <option value="MK001">Algoritma &amp; Pemrograman – TI-A</option>
-                <option value="MK002">Basis Data – TI-B</option>
-                <option value="MK003">Rekayasa Perangkat Lunak – TI-A</option>
-                <option value="MK004">Jaringan Komputer – TI-C</option>
-                <option value="MK005">Sistem Operasi – TI-B</option>
+                @foreach($matakuliahs as $matakuliah)
+                  <option value="{{ $matakuliah->kode_matakuliah }}">
+                    {{ $matakuliah->nama_matakuliah }}
+                  </option>
+                @endforeach
               </select>
             </div>
 
             <div class="mb-3">
-              <label class="form-label">Pertemuan Ke‑</label>
+              <label class="form-label">Pertemuan Ke-</label>
               <input type="number" class="form-control" id="pertemuan" min="1" max="16" value="8"
                 placeholder="Contoh: 8" />
             </div>
@@ -538,7 +537,7 @@
             <div class="mb-4">
               <label class="form-label">Keterangan (Opsional)</label>
               <textarea class="form-control" id="keterangan" rows="2"
-                placeholder="Contoh: Kuliah tatap muka, bab 8 – Relasi Antar Tabel"></textarea>
+                placeholder="Contoh: Kuliah tatap muka, bab 8 - Relasi Antar Tabel"></textarea>
             </div>
 
             <button class="btn-generate" onclick="generateQR()">
@@ -614,15 +613,11 @@
 
                 <!-- Actions -->
                 <div class="d-flex gap-2 mt-4">
-                  <button
-                    class="btn btn-outline-danger btn-sm rounded-pill px-3"
-                    onclick="stopQR()">
+                  <button class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="stopQR()">
                     <i class="bi bi-stop-circle me-1"></i>Hentikan
                   </button>
 
-                  <button
-                    class="btn btn-sm rounded-pill px-3"
-                    style="background: var(--maroon); color: #fff;"
+                  <button class="btn btn-sm rounded-pill px-3" style="background: var(--maroon); color: #fff;"
                     onclick="generateQR()">
                     <i class="bi bi-arrow-clockwise me-1"></i>Regenerate
                   </button>
@@ -630,8 +625,7 @@
 
                 <!-- Daftar Mahasiswa Scan -->
                 <div class="card mt-4 w-100 shadow-sm">
-                  <div
-                    class="card-header text-white fw-semibold d-flex align-items-center"
+                  <div class="card-header text-white fw-semibold d-flex align-items-center"
                     style="background: var(--maroon);">
                     <i class="bi bi-people-fill me-2"></i>
                     Daftar Mahasiswa Scan
@@ -639,8 +633,7 @@
 
                   <div class="card-body p-0">
                     <div class="table-responsive">
-                      <table
-                        class="table table-bordered table-hover align-middle mb-0 text-center">
+                      <table class="table table-bordered table-hover align-middle mb-0 text-center">
                         <thead style="background: var(--maroon); color: #fff;">
                           <tr>
                             <th>NIM</th>
@@ -651,36 +644,38 @@
                           </tr>
                         </thead>
 
-                        <tbody>
-                          <tr>
-                            <td>221110001</td>
-                            <td class="text-start">Budi Santoso</td>
-                            <td>
-                              <span class="badge bg-success">Hadir</span>
-                            </td>
-                            <td>-7.7691</td>
-                            <td>110.3777</td>
-                          </tr>
+                        <tbody id="presensiTableBody">
+                          @forelse($presensis as $presensi)
+                            <tr>
+                              <td>
+                                {{ $presensi->mahasiswa->nim ?? '-' }}
+                              </td>
 
-                          <tr>
-                            <td>221110002</td>
-                            <td class="text-start">Siti Aisyah</td>
-                            <td>
-                              <span class="badge bg-success">Hadir</span>
-                            </td>
-                            <td>-7.7688</td>
-                            <td>110.3780</td>
-                          </tr>
+                              <td class="text-start">
+                                {{ $presensi->mahasiswa->nama ?? $presensi->mahasiswa->name ?? '-' }}
+                              </td>
 
-                          <tr>
-                            <td>221110003</td>
-                            <td class="text-start">Ahmad Rizki</td>
-                            <td>
-                              <span class="badge bg-success">Hadir</span>
-                            </td>
-                            <td>-7.7695</td>
-                            <td>110.3775</td>
-                          </tr>
+                              <td>
+                                <span class="badge bg-success">
+                                  {{ ucfirst($presensi->status) }}
+                                </span>
+                              </td>
+
+                              <td>
+                                {{ $presensi->latitude ?? '-' }}
+                              </td>
+
+                              <td>
+                                {{ $presensi->longitude ?? '-' }}
+                              </td>
+                            </tr>
+                          @empty
+                            <tr>
+                              <td colspan="5" class="text-center">
+                                Belum ada mahasiswa yang scan
+                              </td>
+                            </tr>
+                          @endforelse
                         </tbody>
                       </table>
                     </div>
@@ -702,15 +697,12 @@
     document.getElementById('tglSesi').value = new Date().toISOString().split('T')[0];
 
     let timerInterval = null;
-    let scanSimInterval = null;
+    let presensiPollInterval = null;
+    const presensisUrl = '/dosen/generate_qr/presensis';
 
-    const mkNames = {
-      MK001: 'Algoritma & Pemrograman',
-      MK002: 'Basis Data',
-      MK003: 'Rekayasa Perangkat Lunak',
-      MK004: 'Jaringan Komputer',
-      MK005: 'Sistem Operasi',
-    };
+    const mkNames = @json($matakuliahs->pluck('nama_matakuliah', 'kode_matakuliah'));
+
+    document.getElementById('scanCount').textContent = '{{ $presensis->count() }}';
 
     function generateQR() {
 
@@ -749,7 +741,7 @@
       // CLEAR TIMER LAMA
       clearInterval(timerInterval);
 
-      clearInterval(scanSimInterval);
+      clearInterval(presensiPollInterval);
 
       document.getElementById(
         'qrCanvas'
@@ -762,120 +754,66 @@
         (position) => {
 
           fetch('/dosen/generate_qr/process', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json', // TAMBAHKAN INI
+              'X-CSRF-TOKEN': document
+                .querySelector('meta[name="csrf-token"]')
+                .getAttribute('content')
+            },
 
-              method: 'POST',
+            body: JSON.stringify({
 
-              headers: {
+              kode_matakuliah: mk,
 
-                'Content-Type': 'application/json',
+              pertemuan: prtm,
 
-                'X-CSRF-TOKEN': document
-                  .querySelector(
-                    'meta[name="csrf-token"]'
-                  )
-                  .getAttribute('content')
+              tanggal: tgl,
 
-              },
+              waktu_mulai: wkt,
 
-              body: JSON.stringify({
+              durasi: dur,
 
-                kode_matakuliah: mk,
+              keterangan: document.getElementById(
+                'keterangan'
+              ).value,
 
-                pertemuan: prtm,
+              // GPS DOSEN
+              latitude: position.coords.latitude,
 
-                tanggal: tgl,
-
-                waktu_mulai: wkt,
-
-                durasi: dur,
-
-                keterangan: document.getElementById(
-                  'keterangan'
-                ).value,
-
-                // GPS DOSEN
-                latitude: position.coords.latitude,
-
-                longitude: position.coords.longitude
-
-              })
+              longitude: position.coords.longitude
 
             })
+
+          })
 
             .then(res => res.json())
 
             .then(data => {
 
-              console.log(data);
+              console.log("DATA:", data);
 
-              if (!data.success) {
-
-                alert(
-                  'Gagal generate QR'
-                );
-
-                return;
-
-              }
-
-              const qrCanvas =
-                document.getElementById(
-                  'qrCanvas'
-                );
+              const qrCanvas = document.getElementById('qrCanvas');
 
               qrCanvas.innerHTML = '';
 
-              console.log(
-                'QR URL:',
-                data.url
-              );
-
-              // GENERATE QR
               new QRCode(qrCanvas, {
-
                 text: data.url,
-
                 width: 180,
-
                 height: 180
-
               });
+              document.getElementById('qrPlaceholder').style.display = 'none';
+              document.getElementById('qrResult').style.display = 'flex';
 
-              // UPDATE UI
-              document.getElementById(
-                  'qrMkLabel'
-                ).textContent =
-                mkNames[mk] || mk;
+              document.getElementById('qrMkLabel').textContent =
+                mkNames[mk] ?? mk;
 
-              document.getElementById(
-                  'qrSubLabel'
-                ).textContent =
+              document.getElementById('qrSubLabel').textContent =
                 'Pertemuan ke-' + prtm;
 
-              document.getElementById(
-                'infoDate'
-              ).textContent = tgl;
-
-              document.getElementById(
-                'infoTime'
-              ).textContent = wkt;
-
-              document.getElementById(
-                'scanCount'
-              ).textContent = '0';
-
-              document.getElementById(
-                'qrPlaceholder'
-              ).style.display = 'none';
-
-              const res =
-                document.getElementById(
-                  'qrResult'
-                );
-
-              res.style.display = 'flex';
-
-              // COUNTDOWN
+              document.getElementById('infoDate').textContent = tgl;
+              document.getElementById('infoTime').textContent = wkt;
               let remaining = dur;
 
               updateTimer(remaining);
@@ -884,53 +822,26 @@
 
                 remaining--;
 
+                updateTimer(remaining);
+
                 if (remaining <= 0) {
 
-                  clearInterval(
-                    timerInterval
-                  );
+                  clearInterval(timerInterval);
+                  clearInterval(presensiPollInterval);
 
                   stopQR(true);
 
-                  return;
-
                 }
-
-                updateTimer(remaining);
 
               }, 1000);
+              refreshPresensis();
 
-              // SIMULASI COUNT
-              let cnt = 0;
-
-              scanSimInterval = setInterval(() => {
-
-                if (cnt < 32) {
-
-                  cnt++;
-
-                  document.getElementById(
-                    'scanCount'
-                  ).textContent = cnt;
-
-                } else {
-
-                  clearInterval(
-                    scanSimInterval
-                  );
-
-                }
-
-              }, 800);
+              presensiPollInterval = setInterval(refreshPresensis, 3000);
 
             })
-
             .catch(err => {
-
               console.log(err);
-
               alert('Fetch Error');
-
             });
 
         },
@@ -962,10 +873,60 @@
 
     function stopQR(expired) {
       clearInterval(timerInterval);
-      clearInterval(scanSimInterval);
+      clearInterval(presensiPollInterval);
       document.getElementById('qrResult').style.display = 'none';
       document.getElementById('qrPlaceholder').style.display = 'flex';
       if (expired) alert('Sesi QR Code telah berakhir.');
+    }
+
+    function refreshPresensis() {
+      fetch(presensisUrl, {
+        headers: {
+          'Accept': 'application/json'
+        }
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (!data.success) return;
+
+          document.getElementById('scanCount').textContent = data.scan_count;
+          renderPresensis(data.presensis);
+        })
+        .catch(err => console.log(err));
+    }
+
+    function renderPresensis(presensis) {
+      const tbody = document.getElementById('presensiTableBody');
+
+      if (!presensis || presensis.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="text-center">
+              Belum ada mahasiswa yang scan
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = presensis.map((presensi) => `
+        <tr>
+          <td>${escapeHtml(presensi.nim ?? '-')}</td>
+          <td class="text-start">${escapeHtml(presensi.nama ?? '-')}</td>
+          <td><span class="badge bg-success">${escapeHtml(presensi.status ?? '-')}</span></td>
+          <td>${escapeHtml(presensi.latitude ?? '-')}</td>
+          <td>${escapeHtml(presensi.longitude ?? '-')}</td>
+        </tr>
+      `).join('');
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
     }
 
     function toggleSidebar() {
