@@ -53,6 +53,9 @@ Route::middleware(['auth', 'role:mahasiswa'])->prefix('mahasiswa')->group(functi
         '/scan/process',
         [ScanQRController::class, 'process']
     );
+//     Route::post('/scan/process', function () {
+//     die('HALO DARI ROUTE');
+// });
 });
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

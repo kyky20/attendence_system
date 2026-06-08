@@ -14,13 +14,38 @@ use Carbon\Carbon;
 
 class ScanQRController extends Controller
 {
+    public function scan(string $token)
+    {
+        $session = QRSession::where('token', $token)
+            ->where('status', 'aktif')
+            ->where('expired_at', '>=', now())
+            ->first();
+
+        if (!$session) {
+            return view('Presensi.gagal', [
+                'message' => 'QR tidak valid atau sudah kadaluarsa.'
+            ]);
+        }
+
+        return view('mahasiswa.scan_qr', [
+            'qrText' => url('/mahasiswa/scan/' . $token),
+        ]);
+    }
     public function process(Request $request)
     {
-        $qrText = $request->qr_text;
-
-        $parts = explode('/', $qrText);
-
-        $token = end($parts);
+        \Log::info('=== SCAN MASUK ===');
+        \Log::info($request->all());
+        $token = $request->token;
+        \Log::info([
+            'token' => $token,
+            'auth' => Auth::id(),
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
+        ]);
+        if (empty($token) && $request->filled('qr_text')) {
+            $parts = explode('/', $request->qr_text);
+            $token = end($parts);
+        }
 
         $session = QRSession::where(
             'token',
@@ -53,11 +78,11 @@ class ScanQRController extends Controller
             'mahasiswa_id',
             Auth::id()
         )
-        ->where(
-            'qr_session_id',
-            $session->id
-        )
-        ->exists();
+            ->where(
+                'qr_session_id',
+                $session->id
+            )
+            ->exists();
 
         if ($exists) {
 
@@ -69,7 +94,11 @@ class ScanQRController extends Controller
 
             ]);
         }
-
+        \Log::info([
+            'auth_id' => Auth::id(),
+            'session_id' => $session->id,
+            'cookies' => request()->cookies->all(),
+        ]);
         Presensi::create([
 
             'mahasiswa_id' => Auth::id(),
