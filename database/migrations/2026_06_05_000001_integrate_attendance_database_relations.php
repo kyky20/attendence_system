@@ -43,12 +43,14 @@ return new class extends Migration
             }
         });
 
-        DB::table('mahasiswas')
-            ->join('users', 'mahasiswas.email', '=', 'users.email')
-            ->whereNull('mahasiswas.user_id')
-            ->update([
-                'mahasiswas.user_id' => DB::raw('users.id'),
-            ]);
+        // Link mahasiswa to users by matching email
+        $mahasiswas = DB::table('mahasiswas')->whereNull('user_id')->get();
+        foreach ($mahasiswas as $mahasiswa) {
+            $user = DB::table('users')->where('email', $mahasiswa->email)->first();
+            if ($user) {
+                DB::table('mahasiswas')->where('id', $mahasiswa->id)->update(['user_id' => $user->id]);
+            }
+        }
 
         Schema::table('matakuliah', function (Blueprint $table) {
             if (!Schema::hasColumn('matakuliah', 'dosen_id')) {
