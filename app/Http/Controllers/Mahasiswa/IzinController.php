@@ -41,7 +41,7 @@ class IzinController extends Controller
     {
         $request->validate([
             'jenis'           => 'required|in:Sakit,Izin Keluarga,Kegiatan Kampus,Lainnya',
-            'kode_matakuliah' => 'required|string|exists:matakuliahs,kode_matakuliah',
+            'kode_matakuliah' => 'required|string|exists:matakuliah,kode_matakuliah',
             'tanggal'         => 'required|date',
             'keterangan'      => 'required|string|max:1000',
             'lampiran'        => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',

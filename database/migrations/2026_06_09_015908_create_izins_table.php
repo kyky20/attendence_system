@@ -12,13 +12,15 @@ return new class extends Migration
             $table->id();
             $table->foreignId('mahasiswa_id')->constrained('users')->cascadeOnDelete();
             $table->string('kode_matakuliah');
-            $table->foreign('kode_matakuliah')->references('kode_matakuliah')->on('matakuliahs');
+            $table->foreign('kode_matakuliah')->references('kode_matakuliah')->on('matakuliah');
+            $table->foreignId('dosen_id')->nullable()->constrained('users')->nullOnDelete();
             $table->enum('jenis', ['Sakit', 'Izin Keluarga', 'Kegiatan Kampus', 'Lainnya']);
             $table->date('tanggal');
             $table->text('keterangan');
             $table->string('lampiran')->nullable();
             $table->enum('status', ['Menunggu', 'Disetujui', 'Ditolak'])->default('Menunggu');
             $table->text('catatan_dosen')->nullable();
+            $table->timestamp('reviewed_at')->nullable();
             $table->timestamps();
         });
     }

@@ -478,6 +478,9 @@
             @if(session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
             @endif
+            @if(session('error'))
+            <div class="alert alert-danger">{{ session('error') }}</div>
+            @endif
 
             <!-- STAT CARDS -->
             <div class="row g-3 mb-4">
@@ -534,11 +537,9 @@
                     <div class="d-flex flex-column flex-sm-row gap-2 align-items-start align-items-sm-center">
                         <select class="form-select form-select-sm" style="width:auto;border-radius:20px;font-size:.82rem;" id="filterMk" onchange="renderTable()">
                             <option value="">Semua MK</option>
-                            <option>Algoritma &amp; Pemrograman</option>
-                            <option>Basis Data</option>
-                            <option>Rekayasa Perangkat Lunak</option>
-                            <option>Jaringan Komputer</option>
-                            <option>Sistem Operasi</option>
+                            @foreach($matakuliahs as $mk)
+                            <option value="{{ $mk->nama_matakuliah }}">{{ $mk->nama_matakuliah }}</option>
+                            @endforeach
                         </select>
                         <div class="search-box">
                             <i class="bi bi-search"></i>
@@ -634,105 +635,23 @@
         </div>
     </div>
 
+    <!-- Hidden forms untuk approve/reject -->
+    <form id="formApprove" method="POST" style="display:none;">
+        @csrf
+        @method('PATCH')
+        <input type="hidden" name="catatan_dosen" id="formApproveCatatan">
+    </form>
+    <form id="formReject" method="POST" style="display:none;">
+        @csrf
+        @method('PATCH')
+        <input type="hidden" name="catatan_dosen" id="formRejectCatatan">
+    </form>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        let izinData = [{
-                id: 1,
-                nim: 'M001',
-                nama: 'Andi Pratama',
-                mk: 'Algoritma & Pemrograman',
-                jenis: 'Sakit',
-                tgl: '2026-04-10',
-                ket: 'Demam tinggi, tidak bisa hadir.',
-                status: 'Menunggu',
-                catatan: '',
-                diajukan: '2026-04-09'
-            },
-            {
-                id: 2,
-                nim: 'M002',
-                nama: 'Budi Santoso',
-                mk: 'Basis Data',
-                jenis: 'Izin Keluarga',
-                tgl: '2026-04-08',
-                ket: 'Ada acara keluarga mendadak.',
-                status: 'Menunggu',
-                catatan: '',
-                diajukan: '2026-04-07'
-            },
-            {
-                id: 3,
-                nim: 'M003',
-                nama: 'Citra Dewi',
-                mk: 'Rekayasa Perangkat Lunak',
-                jenis: 'Kegiatan Kampus',
-                tgl: '2026-04-14',
-                ket: 'Mewakili kampus dalam lomba coding.',
-                status: 'Menunggu',
-                catatan: '',
-                diajukan: '2026-04-13'
-            },
-            {
-                id: 4,
-                nim: 'M004',
-                nama: 'Dian Rahmadhani',
-                mk: 'Sistem Operasi',
-                jenis: 'Sakit',
-                tgl: '2026-03-20',
-                ket: 'Sakit perut, ada surat dokter.',
-                status: 'Disetujui',
-                catatan: 'Semoga lekas sembuh.',
-                diajukan: '2026-03-19'
-            },
-            {
-                id: 5,
-                nim: 'M005',
-                nama: 'Eko Firmansyah',
-                mk: 'Jaringan Komputer',
-                jenis: 'Lainnya',
-                tgl: '2026-03-15',
-                ket: 'Urusan administrasi kampus.',
-                status: 'Ditolak',
-                catatan: 'Harap hadir, tidak ada keterangan resmi.',
-                diajukan: '2026-03-14'
-            },
-            {
-                id: 6,
-                nim: 'M006',
-                nama: 'Fina Sari',
-                mk: 'Algoritma & Pemrograman',
-                jenis: 'Sakit',
-                tgl: '2026-04-16',
-                ket: 'Flu berat sejak kemarin.',
-                status: 'Menunggu',
-                catatan: '',
-                diajukan: '2026-04-15'
-            },
-            {
-                id: 7,
-                nim: 'M007',
-                nama: 'Gilang Wicaksono',
-                mk: 'Basis Data',
-                jenis: 'Kegiatan Kampus',
-                tgl: '2026-04-17',
-                ket: 'Mengikuti seminar nasional di Jakarta.',
-                status: 'Menunggu',
-                catatan: '',
-                diajukan: '2026-04-16'
-            },
-            {
-                id: 8,
-                nim: 'M008',
-                nama: 'Hani Permata',
-                mk: 'Sistem Operasi',
-                jenis: 'Izin Keluarga',
-                tgl: '2026-04-12',
-                ket: 'Orang tua sakit, harus menemani.',
-                status: 'Disetujui',
-                catatan: 'Baik, izin diterima.',
-                diajukan: '2026-04-11'
-            },
-        ];
+        let izinData = @json($izinJson);
+        const approveUrlTemplate = @json(route('dosen.izin.approve', ['izin' => '__ID__']));
+        const rejectUrlTemplate = @json(route('dosen.izin.reject', ['izin' => '__ID__']));
 
         const ROWS = 8;
         let currentPage = 1;
@@ -946,11 +865,12 @@
 
         function confirmAcc() {
             const iz = izinData.find(i => i.id === actionId);
-            iz.status = 'Disetujui';
-            iz.catatan = document.getElementById('accCatatan').value.trim() || 'Izin disetujui.';
+            const catatan = document.getElementById('accCatatan').value.trim();
+            const form = document.getElementById('formApprove');
+            form.action = approveUrlTemplate.replace('__ID__', actionId);
+            document.getElementById('formApproveCatatan').value = catatan || 'Izin disetujui.';
             mAcc.hide();
-            renderTable();
-            showToast(`Izin ${iz.nama} berhasil disetujui.`, 'success');
+            form.submit();
         }
 
         function openTolak(id) {
@@ -967,12 +887,11 @@
                 showToast('Alasan penolakan wajib diisi!', 'danger');
                 return;
             }
-            const iz = izinData.find(i => i.id === actionId);
-            iz.status = 'Ditolak';
-            iz.catatan = alasan;
+            const form = document.getElementById('formReject');
+            form.action = rejectUrlTemplate.replace('__ID__', actionId);
+            document.getElementById('formRejectCatatan').value = alasan;
             mTolak.hide();
-            renderTable();
-            showToast(`Izin ${iz.nama} ditolak.`, 'warning');
+            form.submit();
         }
 
         function showToast(msg, type) {

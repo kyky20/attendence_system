@@ -61,6 +61,21 @@ class User extends Authenticatable
         return $this->hasMany(Presensi::class, 'mahasiswa_id');
     }
 
+    public function izinsAsMahasiswa(): HasMany
+    {
+        return $this->hasMany(Izin::class, 'mahasiswa_id');
+    }
+
+    public function izinsAsDosen(): HasMany
+    {
+        return $this->hasMany(Izin::class, 'dosen_id');
+    }
+
+    public function matakuliahs(): HasMany
+    {
+        return $this->hasMany(Matakuliah::class, 'dosen_id');
+    }
+
     public function getNimAttribute(): ?string
     {
         return $this->mahasiswaProfile?->nim;

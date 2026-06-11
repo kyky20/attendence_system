@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Dosen\QRController;
+use App\Http\Controllers\Dosen\IzinController as DosenIzinController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MahasiswaController;
 use App\Http\Controllers\MatakuliahController;
@@ -37,9 +38,9 @@ Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->group(function () {
 
     Route::post('/generate_qr/process', [QRController::class, 'store']);
 
-    Route::get('/izin_mahasiswa', function () {
-        return view('dosen.izin_mahasiswa');
-    })->name('dosen.izin.index');
+    Route::get('/izin_mahasiswa', [DosenIzinController::class, 'index'])->name('dosen.izin.index');
+    Route::patch('/izin_mahasiswa/{izin}/approve', [DosenIzinController::class, 'approve'])->name('dosen.izin.approve');
+    Route::patch('/izin_mahasiswa/{izin}/reject', [DosenIzinController::class, 'reject'])->name('dosen.izin.reject');
 });
 
 Route::middleware(['auth', 'role:mahasiswa'])->prefix('mahasiswa')->group(function () {

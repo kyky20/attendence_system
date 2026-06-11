@@ -35,4 +35,9 @@ class Matakuliah extends Model
     {
         return $this->hasMany(QRSession::class, 'matakuliah_id');
     }
+
+    public function izins(): HasMany
+    {
+        return $this->hasMany(Izin::class, 'kode_matakuliah', 'kode_matakuliah');
+    }
 }
