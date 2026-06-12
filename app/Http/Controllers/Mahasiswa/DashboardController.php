@@ -26,8 +26,8 @@ class DashboardController extends Controller
         $userPresensis = Presensi::where('mahasiswa_id', $user->id)->get();
         $hadirCount = $userPresensis->where('status', 'hadir')->count();
         $izinCount = $userPresensis->where('status', 'izin')->count();
-        $absenCount = $userPresensis->where('status', 'absen')->count();
-        $totalPresensis = $hadirCount + $izinCount + $absenCount;
+        $alphaCount = $userPresensis->where('status', 'alpha')->count();
+        $totalPresensis = $hadirCount + $izinCount + $alphaCount;
         
         $attendancePercentage = $totalPresensis > 0 
             ? round(($hadirCount / $totalPresensis) * 100) 
@@ -100,7 +100,7 @@ class DashboardController extends Controller
             'attendancePercentage' => $attendancePercentage,
             'hadirCount' => $hadirCount,
             'izinCount' => $izinCount,
-            'absenCount' => $absenCount,
+            'alphaCount' => $alphaCount,
             'totalPresensis' => $totalPresensis,
             'totalMatakuliah' => $matakuliahs->count(),
             'totalSks' => $matakuliahs->sum('sks'),

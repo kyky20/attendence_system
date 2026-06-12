@@ -185,14 +185,14 @@ class DatabaseSeeder extends Seeder
 
                 // Create attendance records for each mahasiswa
                 foreach ($mahasiswaUsers as $nim => $userId) {
-                    // 80% hadir, 10% izin, 10% absen
+                    // 80% hadir, 10% izin, 10% alpha
                     $rand = rand(1, 100);
                     if ($rand <= 80) {
                         $status = 'hadir';
                     } elseif ($rand <= 90) {
                         $status = 'izin';
                     } else {
-                        $status = 'absen';
+                        $status = 'alpha';
                     }
 
                     Presensi::updateOrCreate(

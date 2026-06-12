@@ -25,7 +25,7 @@ return new class extends Migration
             $table->enum('status', [
                 'hadir',
                 'izin',
-                'absen'
+                'alpha'
             ])->default('hadir');
 
             // GPS mahasiswa
