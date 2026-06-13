@@ -23,7 +23,7 @@ class ProfileController extends Controller
         $totalHadir = $presensis->where('status', 'Hadir')->count();
         $totalIzin = $presensis->where('status', 'Izin')->count();
         $totalAlpha = $presensis->where('status', 'Alpha')->count();
-        $persentaseKehadiran = $totalPertemuan > 0 
+        $persentaseKehadiran = $totalPertemuan > 0
             ? round(($totalHadir / $totalPertemuan) * 100, 2)
             : 0;
 
