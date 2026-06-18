@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Izin;
 use App\Models\Matakuliah;
 use App\Models\Presensi;
+use App\Models\QRSession;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -22,41 +23,65 @@ class DashboardController extends Controller
             ->orderBy('nama_matakuliah')
             ->get();
 
-        // Calculate attendance stats - total across all presensi
-        $userPresensis = Presensi::where('mahasiswa_id', $user->id)->get();
-        $hadirCount = $userPresensis->where('status', 'hadir')->count();
-        $izinCount = $userPresensis->where('status', 'izin')->count();
-        $absenCount = $userPresensis->where('status', 'absen')->count();
-        $totalPresensis = $hadirCount + $izinCount + $absenCount;
-
-        $attendancePercentage = $totalPresensis > 0
-            ? round(($hadirCount / $totalPresensis) * 100)
-            : 0;
-
-        // Get attendance per matakuliah (through QRSession)
+        // Counting logic: base total on QRSessions (each session = 1 pertemuan)
+        // Alpha = QR session exists but no presensi record for this mahasiswa
+        $hadirCount = 0;
+        $izinCount = 0;
+        $absenCount = 0;
+        $totalPertemuan = 0;
         $mkProgress = [];
-        foreach ($matakuliahs as $mk) {
-            // Get presensis through QRSessions for this matakuliah
-            $mkPresensis = Presensi::whereHas('qrSession', function ($query) use ($mk) {
-                $query->where('matakuliah_id', $mk->id);
-            })
-                ->where('mahasiswa_id', $user->id)
-                ->get();
 
-            $mkHadir = $mkPresensis->where('status', 'hadir')->count();
-            $mkTotal = $mkPresensis->count();
+        foreach ($matakuliahs as $mk) {
+            // Get all QR sessions for this matakuliah
+            $mkSessions = QRSession::where('matakuliah_id', $mk->id)->get();
+            $mkTotal = $mkSessions->count();
+
+            if ($mkTotal === 0) continue;
+
+            $mkHadir = 0;
+            $mkIzin = 0;
+            $mkAlpha = 0;
+
+            foreach ($mkSessions as $session) {
+                $presensi = Presensi::where('qr_session_id', $session->id)
+                    ->where('mahasiswa_id', $user->id)
+                    ->first();
+
+                if ($presensi) {
+                    if ($presensi->status === 'hadir') {
+                        $mkHadir++;
+                        $hadirCount++;
+                    } elseif ($presensi->status === 'izin') {
+                        $mkIzin++;
+                        $izinCount++;
+                    } else {
+                        $mkAlpha++;
+                        $absenCount++;
+                    }
+                } else {
+                    // No presensi record = Alpha
+                    $mkAlpha++;
+                    $absenCount++;
+                }
+                $totalPertemuan++;
+            }
+
             $mkPercentage = $mkTotal > 0 ? round(($mkHadir / $mkTotal) * 100) : 0;
 
-            if ($mkTotal > 0) {
-                $mkProgress[] = [
-                    'nama' => $mk->nama_matakuliah,
-                    'hadir' => $mkHadir,
-                    'total' => $mkTotal,
-                    'pct' => $mkPercentage,
-                    'color' => $mkPercentage >= 80 ? '#198754' : ($mkPercentage >= 60 ? '#fd7e14' : '#dc3545'),
-                ];
-            }
+            $mkProgress[] = [
+                'nama'  => $mk->nama_matakuliah,
+                'hadir' => $mkHadir,
+                'izin'  => $mkIzin,
+                'alpha' => $mkAlpha,
+                'total' => $mkTotal,
+                'pct'   => $mkPercentage,
+                'color' => $mkPercentage >= 80 ? '#198754' : ($mkPercentage >= 60 ? '#fd7e14' : '#dc3545'),
+            ];
         }
+
+        $attendancePercentage = $totalPertemuan > 0
+            ? round(($hadirCount / $totalPertemuan) * 100)
+            : 0;
 
         // Get latest izin pengajuan
         $izinData = Izin::where('mahasiswa_id', $user->id)
@@ -101,7 +126,7 @@ class DashboardController extends Controller
             'hadirCount' => $hadirCount,
             'izinCount' => $izinCount,
             'absenCount' => $absenCount,
-            'totalPresensis' => $totalPresensis,
+            'totalPresensis' => $totalPertemuan,
             'totalMatakuliah' => $matakuliahs->count(),
             'totalSks' => $matakuliahs->sum('sks'),
             'mkProgress' => $mkProgress,
@@ -119,45 +144,62 @@ class DashboardController extends Controller
             ->orderBy('nama_matakuliah')
             ->get();
 
-        $userPresensis = Presensi::where('mahasiswa_id', $user->id)->get();
-
-        $hadirCount = $userPresensis->where('status', 'hadir')->count();
-        $izinCount = $userPresensis->where('status', 'izin')->count();
-        $absenCount = $userPresensis->where('status', 'absen')->count();
-
-        $totalPresensis = $hadirCount + $izinCount + $absenCount;
-
-        $attendancePercentage = $totalPresensis > 0
-            ? round(($hadirCount / $totalPresensis) * 100)
-            : 0;
-
+        // Same QRSession-based logic as index()
+        $hadirCount = 0;
+        $izinCount = 0;
+        $absenCount = 0;
+        $totalPertemuan = 0;
         $mkProgress = [];
 
         foreach ($matakuliahs as $mk) {
-            $mkPresensis = Presensi::whereHas('qrSession', function ($query) use ($mk) {
-                $query->where('matakuliah_id', $mk->id);
-            })
-                ->where('mahasiswa_id', $user->id)
-                ->get();
+            $mkSessions = QRSession::where('matakuliah_id', $mk->id)->get();
+            $mkTotal = $mkSessions->count();
 
-            $mkHadir = $mkPresensis->where('status', 'hadir')->count();
-            $mkTotal = $mkPresensis->count();
-            $mkPercentage = $mkTotal > 0
-                ? round(($mkHadir / $mkTotal) * 100)
-                : 0;
+            if ($mkTotal === 0) continue;
 
-            if ($mkTotal > 0) {
-                $mkProgress[] = [
-                    'nama' => $mk->nama_matakuliah,
-                    'hadir' => $mkHadir,
-                    'total' => $mkTotal,
-                    'pct' => $mkPercentage,
-                    'color' => $mkPercentage >= 80
-                        ? '#198754'
-                        : ($mkPercentage >= 60 ? '#fd7e14' : '#dc3545'),
-                ];
+            $mkHadir = 0;
+            $mkIzin = 0;
+            $mkAlpha = 0;
+
+            foreach ($mkSessions as $session) {
+                $presensi = Presensi::where('qr_session_id', $session->id)
+                    ->where('mahasiswa_id', $user->id)
+                    ->first();
+
+                if ($presensi) {
+                    if ($presensi->status === 'hadir') {
+                        $mkHadir++;
+                        $hadirCount++;
+                    } elseif ($presensi->status === 'izin') {
+                        $mkIzin++;
+                        $izinCount++;
+                    } else {
+                        $mkAlpha++;
+                        $absenCount++;
+                    }
+                } else {
+                    $mkAlpha++;
+                    $absenCount++;
+                }
+                $totalPertemuan++;
             }
+
+            $mkPercentage = $mkTotal > 0 ? round(($mkHadir / $mkTotal) * 100) : 0;
+
+            $mkProgress[] = [
+                'nama'  => $mk->nama_matakuliah,
+                'hadir' => $mkHadir,
+                'izin'  => $mkIzin,
+                'alpha' => $mkAlpha,
+                'total' => $mkTotal,
+                'pct'   => $mkPercentage,
+                'color' => $mkPercentage >= 80 ? '#198754' : ($mkPercentage >= 60 ? '#fd7e14' : '#dc3545'),
+            ];
         }
+
+        $attendancePercentage = $totalPertemuan > 0
+            ? round(($hadirCount / $totalPertemuan) * 100)
+            : 0;
 
         $izinData = Izin::where('mahasiswa_id', $user->id)
             ->with('matakuliah')
@@ -205,7 +247,7 @@ class DashboardController extends Controller
             'hadirCount' => $hadirCount,
             'izinCount' => $izinCount,
             'absenCount' => $absenCount,
-            'totalPresensis' => $totalPresensis,
+            'totalPresensis' => $totalPertemuan,
             'totalMatakuliah' => $matakuliahs->count(),
             'totalSks' => $matakuliahs->sum('sks'),
             'mkProgress' => $mkProgress,

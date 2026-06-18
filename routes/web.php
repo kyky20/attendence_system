@@ -12,6 +12,7 @@ use App\Http\Controllers\MatakuliahController;
 use App\Http\Controllers\Mahasiswa\ScanQRController;
 use App\Http\Controllers\Mahasiswa\IzinController;
 
+
 Route::get('/', function () {
     if (auth()->check()) {
         return auth()->user()->role === 'dosen'
@@ -48,6 +49,11 @@ Route::middleware(['auth', 'role:mahasiswa'])->prefix('mahasiswa')->group(functi
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('mahasiswa.dashboard');
     Route::get('/list_matakuliah', [MatakuliahController::class, 'mahasiswaIndex'])->name('mahasiswa.matakuliah.index');
     Route::get('/profile', [MahasiswaProfileController::class, 'show'])->name('mahasiswa.profile');
+    Route::put('/profile', [MahasiswaProfileController::class, 'update'])->name('mahasiswa.profile.update');
+    Route::put('/profile/password', [MahasiswaProfileController::class, 'updatePassword'])->name('mahasiswa.profile.password');
+    Route::get('/profile/api', [MahasiswaProfileController::class, 'apiShow']);
+    Route::put('/profile/api', [MahasiswaProfileController::class, 'apiUpdate']);
+    
     Route::get('/scan_qr', function () {
         return view('mahasiswa.scan_qr');
     });
@@ -81,9 +87,8 @@ Route::middleware(['auth', 'role:mahasiswa'])->prefix('mahasiswa')->group(functi
     );
 });
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile/api', [MahasiswaProfileController::class, 'apiShow'])->name('profile.api.show');
+    Route::put('/profile/api', [MahasiswaProfileController::class, 'apiUpdate'])->name('profile.api.update');
 });
 
 require __DIR__ . '/auth.php';

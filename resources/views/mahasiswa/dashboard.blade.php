@@ -189,7 +189,7 @@
   </div>
   <div class="sum-pill">
     <div class="val" style="color:#dc3545;">{{ $absenCount }}</div>
-    <div class="lbl">Absen</div>
+    <div class="lbl">Alpha</div>
   </div>
   <div class="sum-pill">
     <div class="val" style="color:#0d6efd;">{{ $totalSks }}</div>
